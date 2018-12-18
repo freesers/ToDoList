@@ -58,13 +58,11 @@ class ToDoViewController: UITableViewController {
         switch indexPath {
         case [1,0]:
             isPickerHidden = !isPickerHidden
-            
             dueDateLabel.textColor = isPickerHidden ? .black : tableView.tintColor
             
             tableView.beginUpdates()
             tableView.endUpdates()
             tableView.deselectRow(at: indexPath, animated: true)
-        
         default:
             break
         }
@@ -105,6 +103,5 @@ class ToDoViewController: UITableViewController {
         let notes = notesTextView.text
         
         todo = ToDo(title: title, isComplete: isComplete, dueDate: dueDate, notes: notes)
-        
     }
 }

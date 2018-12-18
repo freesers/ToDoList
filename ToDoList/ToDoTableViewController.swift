@@ -24,17 +24,6 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
         }
         
         navigationItem.leftBarButtonItem = editButtonItem
-        
-    }
-    
-    func checkmarkTapped(sender: ToDoCell) {
-        if let indexPath = tableView.indexPath(for: sender) {
-            var todo = todos[indexPath.row]
-            todo.isComplete = !todo.isComplete
-            todos[indexPath.row] = todo
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-            ToDo.saveToDos(todos)
-        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -47,6 +36,8 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
         }
         
         let todo = todos[indexPath.row]
+        
+        // configure cell
         cell.titleLabel?.text = todo.title
         cell.isCompleteButton.isSelected = todo.isComplete
         cell.delegate = self
@@ -60,8 +51,21 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            
+            // remove ToDo and resave
             todos.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            ToDo.saveToDos(todos)
+        }
+    }
+    
+    /// (un)draws checkmark after checkmark tapped
+    func checkmarkTapped(sender: ToDoCell) {
+        if let indexPath = tableView.indexPath(for: sender) {
+            var todo = todos[indexPath.row]
+            todo.isComplete = !todo.isComplete
+            todos[indexPath.row] = todo
+            tableView.reloadRows(at: [indexPath], with: .automatic)
             ToDo.saveToDos(todos)
         }
     }
@@ -71,12 +75,14 @@ class ToDoTableViewController: UITableViewController, ToDoCellDelegate {
         let svc = segue.source as! ToDoViewController
         
         if let todo = svc.todo {
+            
+            // Replace existing todo
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 todos[selectedIndexPath.row] = todo
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
-                
             } else {
                 
+                // create new todo
                 let newIndexPath = IndexPath(row: todos.count, section: 0)
                 todos.append(todo)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
